@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Axiom ID — Decentralized AI Identities</title>
+  <meta name="description" content="Create and manage verifiable AI identities on Solana. Stake, reputation, and AI-powered persona tools." />
+  <meta property="og:title" content="Axiom ID — Decentralized AI Identities" />
+  <meta property="og:description" content="Create and manage verifiable AI identities on Solana. Stake, reputation, and AI-powered persona tools." />
+  <meta property="og:type" content="website" />
+  <style>
+    :root{--accent:#0ea5a4;--muted:#6b7280;--bg:#0f172a;color-scheme:light}
+    html,body{height:100%}
+    body{font-family:Inter,system-ui,Segoe UI,Roboto,Helvetica,Arial;line-height:1.5;margin:0;background:linear-gradient(180deg,#071026 0%, #081627 100%);color:#fff}
+    .container{max-width:1024px;margin:0 auto;padding:32px}
+    header{display:flex;align-items:center;justify-content:space-between}
+    nav a{color:rgba(255,255,255,0.85);text-decoration:none;margin-left:18px}
+    .hero{display:grid;grid-template-columns:1fr 360px;gap:32px;align-items:center;margin-top:40px}
+    .card{background:linear-gradient(180deg,rgba(255,255,255,0.03),rgba(255,255,255,0.01));padding:20px;border-radius:12px;box-shadow:0 6px 24px rgba(2,6,23,.6)}
+    h1{font-size:28px;margin:0 0 12px}
+    p.lead{color:var(--muted);margin:0 0 18px}
+    .btn{display:inline-block;background:var(--accent);color:#022; padding:10px 16px;border-radius:8px;font-weight:600;text-decoration:none}
+    .metrics{display:flex;gap:12px;margin-top:18px}
+    .metric{flex:1;padding:12px;border-radius:10px;background:rgba(255,255,255,0.02);text-align:center}
+    .features{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:22px}
+    .feature{padding:14px;border-radius:10px;background:rgba(255,255,255,0.02)}
+    footer{margin-top:48px;color:var(--muted);font-size:13px;padding:12px 0}
+    @media (max-width:900px){.hero{grid-template-columns:1fr;}.features{grid-template-columns:1fr 1fr}}
+    @media (max-width:600px){.features{grid-template-columns:1fr}}
+    pre{background:#071526;padding:12px;border-radius:8px;overflow:auto}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div style="display:flex;align-items:center;gap:12px">
+        <div style="width:44px;height:44px;border-radius:10px;background:linear-gradient(45deg,#06b6d4,#7c3aed)"></div>
+        <strong>Axiom ID</strong>
+      </div>
+      <nav>
+        <a href="#features">Features</a>
+        <a href="#data">Data</a>
+        <a href="#tools">Smart Tools</a>
+        <a href="#get-started" class="btn">Get Started</a>
+      </nav>
+    </header>
+
+    <section class="hero">
+      <div>
+        <h1>Create verifiable AI identities — stake, verify, and grow reputation</h1>
+        <p class="lead">Axiom ID provides a privacy-forward way to create on-chain AI personas with reputation and stake. Integrates with Solana wallets for seamless onboarding.</p>
+        <a class="btn" id="connectBtn">Connect Wallet</a>
+        <div class="metrics" id="metrics">
+          <div class="metric"><div style="font-size:20px" id="m-identities">—</div><div style="color:var(--muted)">Identities</div></div>
+          <div class="metric"><div style="font-size:20px" id="m-staked">—</div><div style="color:var(--muted)">Total Staked</div></div>
+          <div class="metric"><div style="font-size:20px" id="m-rep">—</div><div style="color:var(--muted)">Avg Reputation</div></div>
+        </div>
+      </div>
+
+      <aside class="card">
+        <h3 style="margin-top:0">Quick create</h3>
+        <p style="color:var(--muted)">Enter a persona name and initial stake to mint an Axiom ID account on Solana.</p>
+        <label for="persona" style="display:block;margin-top:10px">Persona</label>
+        <input id="persona" placeholder="DeFi Analyst v1" style="width:100%;padding:8px;border-radius:8px;border:none;background:#03111b;color:#fff" />
+        <label for="stake" style="display:block;margin-top:10px">Stake (AXM)</label>
+        <input id="stake" placeholder="100" type="number" style="width:100%;padding:8px;border-radius:8px;border:none;background:#03111b;color:#fff" />
+        <a class="btn" id="createBtn" style="display:inline-block;margin-top:12px">Create Identity</a>
+        <p style="color:var(--muted);font-size:13px;margin-top:10px">This button calls the on-chain program (placeholder).</p>
+      </aside>
+    </section>
+
+    <section id="features" style="margin-top:36px">
+      <h2>Core features</h2>
+      <div class="features">
+        <div class="feature"><strong>On-chain Identity</strong><div style="color:var(--muted)">Persist persona, authority, stake, and reputation in an Anchor program</div></div>
+        <div class="feature"><strong>Staking & Reputation</strong><div style="color:var(--muted)">Stake tokens to increase trust and earn rewards for useful behavior</div></div>
+        <div class="feature"><strong>Verifications</strong><div style="color:var(--muted)">Link external attestations (Github, Twitter, KYC) to boost reputation</div></div>
+        <div class="feature"><strong>AI Persona Tools</strong><div style="color:var(--muted)">Generate and tune persona descriptions with prompts and templates</div></div>
+        <div class="feature"><strong>Analytics</strong><div style="color:var(--muted)">Dashboard for activity trends, reputation health, and stake flows</div></div>
+        <div class="feature"><strong>Developer API</strong><div style="color:var(--muted)">Simple REST/WebSocket endpoints for integrating identities into apps</div></div>
+      </div>
+    </section>
+
+    <section id="data" style="margin-top:32px">
+      <h2>Suggested data & metrics</h2>
+      <ul style="color:var(--muted)">
+        <li>Total identities created (24h / 7d / all-time)</li>
+        <li>Active identities (last 30 days)</li>
+        <li>Total staked amount and average stake per identity</li>
+        <li>Reputation distribution (histogram buckets)</li>
+        <li>Top personas / trending persona tags</li>
+        <li>Recent on-chain events (creation, stake change, verification)</li>
+      </ul>
+      <h3 style="margin-top:12px">Example data payload (JSON)</h3>
+      <pre id="sampleJson">{
+  "total_identities": 1241,
+  "active_30d": 487,
+  "total_staked": 542300,
+  "avg_reputation": 72.4,
+  "top_personas": ["DeFi Analyst","Vulnerability Scanner","OnChain Researcher"]
+}</pre>
+    </section>
+
+    <section id="tools" style="margin-top:32px">
+      <h2>Smart tools to add before sharing</h2>
+      <ol style="color:var(--muted)">
+        <li><strong>Persona Generator (AI)</strong> — provide templates + one-click generate persona descriptions and suggested metadata (skills, tags).</li>
+        <li><strong>Reputation Scorer</strong> — off-chain indexing that computes a reputation signal from events + attestations.</li>
+        <li><strong>Verification Flows</strong> — GitHub/Twitter proof linking (OAuth + signed message) to attach attestations.</li>
+        <li><strong>Bulk Onboarding</strong> — CSV import for creators / DAOs to create multiple identities.</li>
+        <li><strong>Export & Integrations</strong> — CSV/JSON export, Embeddable widgets for other sites.</li>
+        <li><strong>Admin Dashboard</strong> — moderation tools, dispute handling, and reputation appeals.</li>
+      </ol>
+    </section>
+
+    <section id="get-started" style="margin-top:32px">
+      <h2>Ready to try</h2>
+      <p style="color:var(--muted)">When you’re ready to share publicly, make sure to include:</p>
+      <ul style="color:var(--muted)">
+        <li>Privacy notes and data retention policy</li>
+        <li>Short walkthrough (video or gif) showing "Create identity" flow</li>
+        <li>Links to docs, GitHub, and a developer Quick Start</li>
+        <li>Contact / security disclosure / audit badges</li>
+      </ul>
+    </section>
+
+    <footer>
+      Built with Anchor & Solana — Axiom ID • <span id="year"></span>
+    </footer>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // Safe DOM queries with existence checks
+      const setText = (id, value) => { const el = document.getElementById(id); if (el) el.textContent = value; };
+
+      setText('year', new Date().getFullYear());
+
+      // Placeholder metrics - replace these calls with real API calls to your indexing service
+      const metrics = { total_identities: 1241, total_staked: 542300, avg_reputation: 72.4 };
+      setText('m-identities', metrics.total_identities);
+      setText('m-staked', metrics.total_staked + ' AXM');
+      setText('m-rep', metrics.avg_reputation);
+
+      // Wallet / create placeholders. Integrate with solana-wallet-adapter or similar.
+      const connectBtn = document.getElementById('connectBtn');
+      if (connectBtn) connectBtn.addEventListener('click', () => alert('Connect wallet: integrate solana wallet adapter (Phantom, Solflare)'));
+
+      const createBtn = document.getElementById('createBtn');
+      if (createBtn) createBtn.addEventListener('click', () => {
+        const personaEl = document.getElementById('persona');
+        const stakeEl = document.getElementById('stake');
+        const persona = personaEl ? (personaEl.value || 'Unnamed Persona') : 'Unnamed Persona';
+        const stake = stakeEl ? Number(stakeEl.value) || 0 : 0;
+        alert(`Create identity (stub): persona=${persona}, stake=${stake}`);
+        // TODO: call your backend/anchor client to generate a transaction and call `create_identity`
+      });
+    });
+  </script>
+</body>
+</html>

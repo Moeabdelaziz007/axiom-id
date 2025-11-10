@@ -1,0 +1,50 @@
++ set -euo pipefail
++++ dirname ./scripts/local_build_and_deploy.sh
+++ cd ./scripts/..
+++ pwd
++ ROOT='/Users/cryptojoker710/Desktop/Axiom ID/axiom_id'
++ cd '/Users/cryptojoker710/Desktop/Axiom ID/axiom_id'
++ LOGDIR='/Users/cryptojoker710/Desktop/Axiom ID/axiom_id/logs'
++ mkdir -p '/Users/cryptojoker710/Desktop/Axiom ID/axiom_id/logs'
++ printf 'Project root: %s\n' '/Users/cryptojoker710/Desktop/Axiom ID/axiom_id'
+Project root: /Users/cryptojoker710/Desktop/Axiom ID/axiom_id
++ printf '\n=== rustup override set stable ===\n'
+
+=== rustup override set stable ===
++ rustup override set stable
+info: override toolchain for '/Users/cryptojoker710/Desktop/Axiom ID/axiom_id' set to 'stable-x86_64-apple-darwin'
++ printf '\n=== ensure sbf target (may fail on macOS native toolchain) ===\n'
+
+=== ensure sbf target (may fail on macOS native toolchain) ===
++ rustup target list --installed
++ grep -q sbf-solana-solana
++ printf 'Attempting to add sbf-solana-solana target (may fail if toolchain doesn'\''t support it)...\n'
+Attempting to add sbf-solana-solana target (may fail if toolchain doesn't support it)...
++ rustup target add sbf-solana-solana
+error: toolchain 'stable-x86_64-apple-darwin' does not support target 'sbf-solana-solana'
+note: you can see a list of supported targets with `rustc --print=target-list`
+note: if you are adding support for a new target to rustc itself, see https://rustc-dev-guide.rust-lang.org/building/new-target.html
++ printf 'Could not add sbf target for this toolchain. If this fails, Anchor will build using local BPF toolchain or expect Docker. Proceeding anyway.\n'
+Could not add sbf target for this toolchain. If this fails, Anchor will build using local BPF toolchain or expect Docker. Proceeding anyway.
++ command -v solana
+++ command -v solana
++ printf 'solana -> %s\n' /usr/local/bin/solana
+solana -> /usr/local/bin/solana
++ solana --version
+solana-cli 1.18.26 (src:d9f20e95; feat:3241752014, client:SolanaLabs)
++ command -v anchor
++ export BUILD_WITH_DOCKER=0
++ BUILD_WITH_DOCKER=0
++ printf 'BUILD_WITH_DOCKER=%s\n' 0
+BUILD_WITH_DOCKER=0
+++ date +%Y%m%d_%H%M%S
++ BUILD_LOG='/Users/cryptojoker710/Desktop/Axiom ID/axiom_id/logs/anchor_build_20251110_071920.log'
++ printf '\n=== Running: anchor build -v (logs -> %s) ===\n' '/Users/cryptojoker710/Desktop/Axiom ID/axiom_id/logs/anchor_build_20251110_071920.log'
+
+=== Running: anchor build -v (logs -> /Users/cryptojoker710/Desktop/Axiom ID/axiom_id/logs/anchor_build_20251110_071920.log) ===
++ anchor build -v
++ tee '/Users/cryptojoker710/Desktop/Axiom ID/axiom_id/logs/anchor_build_20251110_071920.log'
+Using image "solanafoundation/anchor:v0.32.1"
+Run docker image
+Error during Docker build: Docker build failed: No such file or directory (os error 2)
+Error: Docker build failed: No such file or directory (os error 2)

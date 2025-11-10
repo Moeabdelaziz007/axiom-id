@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Axiom ID — Proof of Identity on Solana</title>
+  <meta name="description" content="Axiom ID — identity proofs and verifiable credentials built on Solana." />
+  <style>
+    :root{--bg:#0f1724;--card:#0b1220;--muted:#9aa6b2;--accent:#00e5a8}
+    html,body{height:100%;margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial}
+    body{background:linear-gradient(180deg,#071023 0%,#071827 100%);color:#e6eef6;padding:40px}
+    .wrap{max-width:980px;margin:0 auto}
+    header{display:flex;align-items:center;gap:16px}
+    .logo{width:56px;height:56px;border-radius:12px;background:linear-gradient(135deg,var(--accent),#00b4ff);display:flex;align-items:center;justify-content:center;color:#052028;font-weight:700}
+    h1{margin:0;font-size:28px}
+    p.lead{color:var(--muted);margin-top:6px}
+    .grid{display:grid;grid-template-columns:1fr 360px;gap:24px;margin-top:28px}
+    .card{background:var(--card);padding:20px;border-radius:12px;color:#d9eef7}
+    .muted{color:var(--muted);font-size:13px}
+    .cta{display:inline-block;background:var(--accent);color:#052028;padding:10px 14px;border-radius:10px;font-weight:700;text-decoration:none}
+    .stat{display:flex;gap:12px;align-items:center}
+    footer{margin-top:40px;color:var(--muted);font-size:13px}
+    pre{background:#04111a;padding:12px;border-radius:8px;overflow:auto}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="logo">A</div>
+      <div>
+        <h1>Axiom ID</h1>
+        <p class="lead">Verifiable, composable identity on Solana — proofs, attestation, and quick developer UX.</p>
+      </div>
+    </header>
+
+    <div class="grid">
+      <div>
+        <div class="card">
+          <h2>Quick demo</h2>
+          <p class="muted">This is the starter landing page for the Axiom ID frontend. Below are ideas and a minimal local integration snippet you can wire to your dApp.</p>
+
+          <h3 style="margin-top:18px">Suggested Landing Content</h3>
+          <ul class="muted">
+            <li>Hero tagline + short explanation of the identity primitives (proofs, revocations, attestations).</li>
+            <li>Key features: On-chain attestations, off-chain proofs, wallet-first UX, privacy-preserving hashes.</li>
+            <li>Quick stats panel: total attestations, active issuers, verifications per day (placeholders).</li>
+            <li>Developer section: install & run commands, code snippets to integrate the JS client.</li>
+            <li>Calls-to-action: Try demo (connect wallet), Read docs, Request an invite.</li>
+          </ul>
+
+          <h3 style="margin-top:12px">Local dev snippet (example)</h3>
+          <pre><code>// Using @coral-xyz/anchor & @solana/web3.js
+const provider = anchor.AnchorProvider.local();
+anchor.setProvider(provider);
+const idl = await anchor.Program.fetchIdl("AXIOM_ID_PROGRAM", provider.connection);
+// load program and call methods
+</code></pre>
+
+          <h3 style="margin-top:12px">Starter CTA</h3>
+          <a class="cta" href="#">Try demo (local)</a>
+        </div>
+
+        <div class="card" style="margin-top:18px">
+          <h3>Suggested data to collect on launch</h3>
+          <ul class="muted">
+            <li>Number of issued attestations (by issuer)</li>
+            <li>Number of successful verifications</li>
+            <li>Categories of attestations (KYC-lite, email, phone, proof-of-domain)</li>
+            <li>Latency & success rate of verification flows</li>
+            <li>Opt-in analytics for demo users (aggregate & anonymized)</li>
+          </ul>
+        </div>
+
+      </div>
+
+      <aside>
+        <div class="card">
+          <h3>Project status</h3>
+          <p class="muted">Build: <strong id="build-status">unknown</strong></p>
+          <p class="muted">Program IDL: <strong id="idl-status">missing</strong></p>
+          <p class="muted">Localnet: <strong id="localnet-status">stopped</strong></p>
+
+          <h3 style="margin-top:12px">Developer quick commands</h3>
+          <pre><code>cd /path/to/axiom_id
+rustup override set stable
+export BUILD_WITH_DOCKER=0
+anchor build -v
+solana-test-validator --reset &amp;
+anchor deploy
+anchor test</code></pre>
+
+          <p class="muted">Place this page in <code>/app/index.html</code> and serve it with any static server for quick demos.</p>
+        </div>
+      </aside>
+    </div>
+
+    <footer>
+      Built for the Axiom ID project — edit this page to reflect your product messaging. When ready, wire up a React/Vue frontend and replace the placeholders with live metrics and wallet flows.
+    </footer>
+  </div>
+</body>
+</html>
