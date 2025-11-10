@@ -1,6 +1,6 @@
 [build]
-  publish = "app"
-  command = "echo 'Deploying Axiom ID landing page'"
+  publish = "landing/dist"
+  command = "cd landing && npm install && npm run build"
 
 [[redirects]]
   from = "/*"
