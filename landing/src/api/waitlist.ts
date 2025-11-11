@@ -2,19 +2,25 @@
 // Since we're using Vite (not Next.js), we can't use Server Actions
 // Instead, we'll create API functions that can be called from components
 
-// Simple email validation function
-function isValidEmail(email: string): boolean {
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  return emailRegex.test(email);
-}
+import { z } from 'zod';
+
+// Define the schema for email validation
+const waitlistSchema = z.object({
+  email: z.string().email('Please enter a valid email address'),
+});
 
 // Function to handle waitlist submission
 export async function joinWaitlist(email: string) {
   try {
     // Validate the email
-    if (!email || !isValidEmail(email)) {
+    const validatedFields = waitlistSchema.safeParse({
+      email,
+    });
+
+    // Return early if validation fails
+    if (!validatedFields.success) {
       return {
-        errors: { email: ['Please enter a valid email address'] },
+        errors: validatedFields.error.flatten().fieldErrors,
         message: 'Invalid email format',
       };
     }
@@ -22,19 +28,19 @@ export async function joinWaitlist(email: string) {
     // Track event with PostHog if available
     if (typeof window !== 'undefined' && (window as any).posthog) {
       (window as any).posthog.capture('waitlist_submitted', {
-        email: email,
+        email: validatedFields.data.email,
       });
     }
 
     // Try to submit to Formspree first
     try {
-      const response = await fetch('https://formspree.io/f/YOUR_FORM_ID', {
+      const response = await fetch('https://formspree.io/f/xblqrblj', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          email: email,
+          email: validatedFields.data.email,
           subject: 'Axiom ID Waitlist Signup',
         }),
       });
@@ -55,7 +61,7 @@ export async function joinWaitlist(email: string) {
     try {
       const waitlistData = JSON.parse(localStorage.getItem('axiom-waitlist') || '[]');
       waitlistData.push({
-        email: email,
+        email: validatedFields.data.email,
         timestamp: new Date().toISOString(),
       });
       localStorage.setItem('axiom-waitlist', JSON.stringify(waitlistData));
@@ -63,7 +69,7 @@ export async function joinWaitlist(email: string) {
       // Track localStorage save with PostHog if available
       if (typeof window !== 'undefined' && (window as any).posthog) {
         (window as any).posthog.capture('waitlist_saved_local', {
-          email: email,
+          email: validatedFields.data.email,
         });
       }
 
@@ -78,7 +84,7 @@ export async function joinWaitlist(email: string) {
       // Track error with PostHog if available
       if (typeof window !== 'undefined' && (window as any).posthog) {
         (window as any).posthog.capture('waitlist_error', {
-          email: email,
+          email: validatedFields.data.email,
           error: 'Both Formspree and localStorage failed',
         });
       }
@@ -87,7 +93,7 @@ export async function joinWaitlist(email: string) {
         message: 'An unexpected error occurred. Please try again later.',
       };
     }
-  } catch (error) {
+  } catch (error: unknown) {
     // Handle any unexpected errors
     console.error('Unexpected error in joinWaitlist:', error);
     
@@ -95,7 +101,7 @@ export async function joinWaitlist(email: string) {
     if (typeof window !== 'undefined' && (window as any).posthog) {
       (window as any).posthog.capture('waitlist_error', {
         email: email,
-        error: error.message,
+        error: error instanceof Error ? error.message : 'Unknown error',
       });
     }
 
