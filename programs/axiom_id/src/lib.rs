@@ -44,6 +44,18 @@ pub mod axiom_id {
         msg!("Axiom ID Program Initialized!");
         Ok(())
     }
+
+    // Add the get_identity function as specified in the execution blueprint
+    // This function allows fetching an existing identity account from the blockchain
+    // The client can fetch account data directly using the PDA without needing to call this
+    pub fn get_identity(ctx: Context<GetIdentity>) -> Result<()> {
+        // The account is already fetched and deserialized by Anchor
+        // We just need to log it or return it
+        // For on-chain, just returning Ok is enough
+        // The client will fetch the account data directly
+        msg!("Identity account data fetched for: {}", ctx.accounts.authority.key());
+        Ok(())
+    }
 }
 
 // --- 2. ADDED A HELPER CALCULATION ---
@@ -89,7 +101,9 @@ pub struct CreateIdentity<'info> {
     #[account(
         init, // 'init' = create this account
         payer = user, // The 'user' pays for the account's rent
-        space = AxiomAiIdentity::LEN // Use the 'LEN' calculation for space
+        space = AxiomAiIdentity::LEN, // Use the 'LEN' calculation for space
+        seeds = [b"axiom-identity", user.key().as_ref()],
+        bump
     )]
     pub identity_account: Account<'info, AxiomAiIdentity>,
     
@@ -101,6 +115,18 @@ pub struct CreateIdentity<'info> {
     pub system_program: Program<'info, System>,
 }
 
+
+// Define the context for getting an identity
+// This tells Anchor how to find the identity account using PDA derivation
+#[derive(Accounts)]
+pub struct GetIdentity<'info> {
+    #[account(
+        seeds = [b"axiom-identity", authority.key().as_ref()],
+        bump
+    )]
+    pub identity_account: Account<'info, AxiomAiIdentity>,
+    pub authority: Signer<'info>,
+}
 
 // This is just a default struct for our placeholder 'initialize' function.
 #[derive(Accounts)]
