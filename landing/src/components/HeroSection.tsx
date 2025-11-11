@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import NeuralNetworkAnimation from './NeuralNetworkAnimation'
+import { WalletMultiButton } from '@solana/wallet-adapter-react-ui'
 
 function HeroSection() {
   const [email, setEmail] = useState('')
@@ -14,6 +15,10 @@ function HeroSection() {
   return (
     <section className="relative min-h-screen flex items-center justify-center px-6 py-20">
       <div className="max-w-7xl mx-auto w-full">
+        {/* Wallet Connection Button */}
+        <div className="absolute top-6 right-6 z-20">
+          <WalletMultiButton />
+        </div>
         <div className="grid lg:grid-cols-2 gap-12 items-center">
           {/* Left content */}
           <div className="space-y-8">
