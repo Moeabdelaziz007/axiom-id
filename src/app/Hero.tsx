@@ -1,0 +1,26 @@
+import { ShieldCheck } from "lucide-react";
+
+export default function Hero() {
+  return (
+    <section className="w-full py-24 px-4">
+      <div className="max-w-4xl mx-auto text-center">
+        <ShieldCheck className="w-16 h-16 text-blue-500 mx-auto mb-8" />
+        <h1 className="text-7xl font-bold text-white mb-4">Axiom ID</h1>
+        <h2 className="text-5xl font-bold text-white mb-6">
+          The Trust Layer for the AI Economy.
+        </h2>
+        <p className="text-xl text-gray-400 mb-12 max-w-2xl mx-auto">
+          Decentralized Identity for Autonomous Agents on Solana
+        </p>
+        <div className="flex flex-col sm:flex-row gap-4 justify-center">
+          <button className="bg-blue-500 text-white px-8 py-3 rounded-lg font-semibold hover:bg-blue-600 transition-colors">
+            Read The Whitepaper
+          </button>
+          <button className="bg-gray-800 text-white px-8 py-3 rounded-lg font-semibold hover:bg-gray-700 transition-colors">
+            Join Discord
+          </button>
+        </div>
+      </div>
+    </section>
+  );
+}
