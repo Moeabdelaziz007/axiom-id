@@ -9,10 +9,10 @@ export default function CTA() {
           Get started by reading our documentation or join the conversation with our community of developers.
         </p>
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
-          <button className="bg-blue-500 text-white px-8 py-3 rounded-lg font-semibold hover:bg-blue-600 transition-colors">
+          <button className="bg-primary text-white px-8 py-3 rounded-lg font-semibold hover-primary transition-colors">
             View GitHub
           </button>
-          <button className="bg-gray-800 text-white px-8 py-3 rounded-lg font-semibold hover:bg-gray-700 transition-colors">
+          <button className="bg-secondary text-white px-8 py-3 rounded-lg font-semibold hover:bg-secondary-hover transition-colors">
             Join Discord
           </button>
         </div>

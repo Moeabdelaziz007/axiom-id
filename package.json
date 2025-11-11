@@ -10,10 +10,16 @@
     "export:static": "next build && echo 'Static export completed in out directory'"
   },
   "dependencies": {
+    "lucide-react": "^0.263.1",
+    "next": "^14.0.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "next": "^14.0.0",
-    "tailwindcss": "^3.3.0",
-    "lucide-react": "^0.263.1"
+    "tailwindcss": "^3.3.0"
+  },
+  "devDependencies": {
+    "@types/minimatch": "^5.1.2",
+    "@types/node": "^24.10.0",
+    "@types/react": "^19.2.3",
+    "typescript": "^5.9.3"
   }
 }

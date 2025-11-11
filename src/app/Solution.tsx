@@ -27,8 +27,8 @@ export default function Solution() {
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {features.map((feature, index) => (
-            <div key={index} className="bg-gray-900 border border-gray-800 rounded-lg p-6">
-              <feature.icon className="w-8 h-8 text-blue-500 mb-4" />
+            <div key={index} className="bg-card border border-card rounded-lg p-6 hover-card transition-colors">
+              <feature.icon className="w-8 h-8 text-primary mb-4" />
               <h3 className="text-xl font-semibold text-white mb-3">{feature.title}</h3>
               <p className="text-gray-300">{feature.description}</p>
             </div>

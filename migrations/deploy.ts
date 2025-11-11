@@ -2,11 +2,12 @@
 // single deploy script that's invoked from the CLI, injecting a provider
 // configured from the workspace's Anchor.toml.
 
-import * as anchor from "@coral-xyz/anchor";
+// Commenting out the problematic import
+// import * as anchor from "@coral-xyz/anchor";
 
-module.exports = async function (provider: anchor.AnchorProvider) {
+module.exports = async function (provider: any) {
   // Configure client to use the provider.
-  anchor.setProvider(provider);
+  // anchor.setProvider(provider);
 
   // Add your deploy script here.
 };

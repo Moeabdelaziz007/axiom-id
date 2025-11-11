@@ -8,3 +8,4 @@ test-ledger
 
 # Local Netlify folder
 .netlify
+.vercel
