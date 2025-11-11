@@ -1,7 +1,7 @@
 {
   "hosting": {
     "site": "auraos-ac2e0",
-    "public": "dist",
+    "public": ".",
     "ignore": [
       "firebase.json",
       "**/.*",

@@ -1,0 +1,37 @@
+[debug] [2025-11-11T15:17:12.661Z] ----------------------------------------------------------------------
+[debug] [2025-11-11T15:17:12.722Z] Command:       /Users/cryptojoker710/.nvm/versions/node/v20.19.5/bin/node /Users/cryptojoker710/.nvm/versions/node/v20.19.5/bin/firebase deploy --only hosting
+[debug] [2025-11-11T15:17:12.723Z] CLI Version:   14.18.0
+[debug] [2025-11-11T15:17:12.724Z] Platform:      darwin
+[debug] [2025-11-11T15:17:12.725Z] Node Version:  v20.19.5
+[debug] [2025-11-11T15:17:12.726Z] Time:          Tue Nov 11 2025 17:17:12 GMT+0200 (Eastern European Standard Time)
+[debug] [2025-11-11T15:17:12.728Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2025-11-11T15:17:18.783Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2025-11-11T15:17:18.785Z] > authorizing via signed-in user (amrikyy3@gmail.com)
+[debug] [2025-11-11T15:17:18.786Z] [iam] checking project auraos-ac2e0 for permissions ["firebase.projects.get","firebasehosting.sites.update"]
+[debug] [2025-11-11T15:17:18.983Z] Checked if tokens are valid: true, expires at: 1762877040894
+[debug] [2025-11-11T15:17:18.986Z] Checked if tokens are valid: true, expires at: 1762877040894
+[debug] [2025-11-11T15:17:18.998Z] >>> [apiv2][query] POST https://cloudresourcemanager.googleapis.com/v1/projects/auraos-ac2e0:testIamPermissions [none]
+[debug] [2025-11-11T15:17:18.999Z] >>> [apiv2][(partial)header] POST https://cloudresourcemanager.googleapis.com/v1/projects/auraos-ac2e0:testIamPermissions x-goog-quota-user=projects/auraos-ac2e0
+[debug] [2025-11-11T15:17:19.006Z] >>> [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/auraos-ac2e0:testIamPermissions {"permissions":["firebase.projects.get","firebasehosting.sites.update"]}
+[debug] [2025-11-11T15:17:22.929Z] <<< [apiv2][status] POST https://cloudresourcemanager.googleapis.com/v1/projects/auraos-ac2e0:testIamPermissions 200
+[debug] [2025-11-11T15:17:22.930Z] <<< [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/auraos-ac2e0:testIamPermissions {"permissions":["firebase.projects.get","firebasehosting.sites.update"]}
+[debug] [2025-11-11T15:17:22.941Z] Checked if tokens are valid: true, expires at: 1762877040894
+[debug] [2025-11-11T15:17:22.942Z] Checked if tokens are valid: true, expires at: 1762877040894
+[debug] [2025-11-11T15:17:22.944Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/auraos-ac2e0 [none]
+[debug] [2025-11-11T15:17:23.428Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/auraos-ac2e0 200
+[debug] [2025-11-11T15:17:23.428Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/auraos-ac2e0 {"projectId":"auraos-ac2e0","projectNumber":"53322697327","displayName":"auraos","name":"projects/auraos-ac2e0","resources":{"hostingSite":"auraos-ac2e0"},"state":"ACTIVE","etag":"1_56a995b6-e6fd-43a3-94a7-3ca212e8751a"}
+[info] 
+[info] === Deploying to 'auraos-ac2e0'...
+[info] 
+[info] i  deploying hosting 
+[debug] [2025-11-11T15:17:23.608Z] Checked if tokens are valid: true, expires at: 1762877040894
+[debug] [2025-11-11T15:17:23.608Z] Checked if tokens are valid: true, expires at: 1762877040894
+[debug] [2025-11-11T15:17:23.610Z] >>> [apiv2][query] POST https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/auraos-ac2e0/versions [none]
+[debug] [2025-11-11T15:17:23.610Z] >>> [apiv2][body] POST https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/auraos-ac2e0/versions {"status":"CREATED","labels":{"deployment-tool":"cli-firebase"}}
+[debug] [2025-11-11T15:17:24.821Z] <<< [apiv2][status] POST https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/auraos-ac2e0/versions 200
+[debug] [2025-11-11T15:17:24.822Z] <<< [apiv2][body] POST https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/auraos-ac2e0/versions {"name":"projects/53322697327/sites/auraos-ac2e0/versions/d88ac2d5e5977011","status":"CREATED","config":{},"labels":{"deployment-tool":"cli-firebase"}}
+[info] i  hosting[auraos-ac2e0]: beginning deploy... 
+[info] i  hosting[auraos-ac2e0]: found 389 files in . 
+[debug] [2025-11-11T15:17:26.175Z] [hosting] uploading with 200 concurrency
+[debug] [2025-11-11T15:17:26.179Z] [hosting] hash cache [] not populated
