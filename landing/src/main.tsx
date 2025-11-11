@@ -12,6 +12,12 @@ import { clusterApiUrl } from '@solana/web3.js';
 // Import the wallet adapter CSS
 import '@solana/wallet-adapter-react-ui/styles.css';
 
+// Import PostHog analytics
+import { initPostHog } from './lib/analytics';
+
+// Initialize PostHog
+initPostHog();
+
 const AppWrapper = () => {
   // Use Devnet for development, Mainnet-beta for production
   const network = WalletAdapterNetwork.Devnet;

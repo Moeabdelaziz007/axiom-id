@@ -4,7 +4,7 @@ use anchor_lang::prelude::*;
 use anchor_lang::solana_program::clock::Clock; // <-- 1. Import Clock to get time
 
 // This is our new Program ID. Anchor will update this for us later.
-declare_id!("11111111111111111111111111111111");
+declare_id!("5E7eosX9X34CWCeGpw2C4ua2JRYTZqZ8MsFkxj3y6T7C");
 
 #[program]
 pub mod axiom_id {

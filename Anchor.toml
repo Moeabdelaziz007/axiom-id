@@ -1,19 +1,19 @@
 [toolchain]
-channel = "stable"
+anchor_version = "0.28.0"
 package_manager = "yarn"
 
 [features]
 resolution = true
 skip-lint = false
 
-[programs.localnet]
-axiom_id = "6XEba5gbdSAf9NCHC9Bt3kaaHgfVTF5HgWK8tg7Jpcsz"
+[programs.devnet]
+axiom_id = "5E7eosX9X34CWCeGpw2C4ua2JRYTZqZ8MsFkxj3y6T7C"
 
 [registry]
 url = "https://api.apr.dev"
 
 [provider]
-cluster = "Localnet"
+cluster = "devnet"
 wallet = "~/.config/solana/id.json"
 
 [scripts]

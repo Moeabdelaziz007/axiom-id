@@ -5,7 +5,7 @@ description = "Created with Anchor"
 edition = "2021"
 
 [lib]
-crate-type = ["cdylib", "lib"]
+crate-type = ["cdylib", "rlib"]
 name = "axiom_id"
 
 [features]
@@ -17,7 +17,11 @@ no-log-ix-name = []
 idl-build = ["anchor-lang/idl-build"]
 
 [dependencies]
-anchor-lang = "0.32.1"
+anchor-lang = "0.28.0"
+indexmap = "2.0.0"
+toml_edit = "0.22.27"
+toml_datetime = "0.6.1"
+toml_parser = "1.0.0"
 
 [lints.rust]
 unexpected_cfgs = { level = "warn", check-cfg = ['cfg(target_os, values("solana"))'] }
