@@ -14,7 +14,9 @@
     "test": "jest",
     "examples:agent": "cd examples && npm run agent-example",
     "examples:langchain": "cd examples && npm run langchain-example",
-    "examples:identity": "cd examples && npm run identity-example"
+    "examples:identity": "cd examples && npm run identity-example",
+    "examples:pohw": "cd examples && npm run pohw-example",
+    "examples:dynamic-staking": "cd examples && npm run dynamic-staking-example"
   },
   "keywords": [
     "axiom",

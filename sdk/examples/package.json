@@ -6,7 +6,10 @@
   "scripts": {
     "agent-example": "ts-node agent-example.ts",
     "langchain-example": "ts-node langchain-example.ts",
-    "identity-example": "ts-node identity-example.ts"
+    "identity-example": "ts-node identity-example.ts",
+    "pohw-example": "ts-node pohw-example.ts",
+    "dynamic-staking-example": "ts-node dynamic-staking-example.ts",
+    "solana-agent-kit-example": "ts-node solana-agent-kit-example.ts"
   },
   "keywords": [
     "axiom",

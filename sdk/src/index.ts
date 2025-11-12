@@ -11,6 +11,8 @@ type AxiomPayments = any;
 type AxiomSlashing = any;
 type AxiomToken = any;
 type AxiomGovernance = any;
+type AxiomPoHW = any;
+type AxiomStakingDynamic = any;
 
 // Import SDK modules
 import { IdentityClient } from './identity';
@@ -18,6 +20,8 @@ import { StakingClient } from './staking';
 import { AttestationClient } from './attestations';
 import { PaymentClient } from './payments';
 import { SlashingClient } from './slashing';
+import { PoHWClient } from './pohw';
+import { DynamicStakingClient } from './dynamic-staking';
 
 export class AxiomIDSDK {
   private connection: Connection;
@@ -28,6 +32,8 @@ export class AxiomIDSDK {
   public attestations: AttestationClient;
   public payments: PaymentClient;
   public slashing: SlashingClient;
+  public pohw: PoHWClient;
+  public dynamicStaking: DynamicStakingClient;
 
   constructor(
     connection: Connection,
@@ -42,6 +48,8 @@ export class AxiomIDSDK {
     this.attestations = new AttestationClient(connection, provider);
     this.payments = new PaymentClient(connection, provider);
     this.slashing = new SlashingClient(connection, provider);
+    this.pohw = new PoHWClient(connection, provider);
+    this.dynamicStaking = new DynamicStakingClient(connection, provider);
   }
 
   /**
@@ -56,13 +64,25 @@ export class AxiomIDSDK {
     axiomPaymentsProgram: Program<AxiomPayments>,
     axiomSlashingProgram: Program<AxiomSlashing>,
     axiomTokenProgram: Program<AxiomToken>,
-    axiomGovernanceProgram: Program<AxiomGovernance>
+    axiomGovernanceProgram: Program<AxiomGovernance>,
+    axiomPoHWProgram?: Program<AxiomPoHW>,
+    axiomStakingDynamicProgram?: Program<AxiomStakingDynamic>
   }) {
     this.identity.initialize(programs.axiomIdProgram, programs.agentSoulFactoryProgram);
     this.staking.initialize(programs.axiomStakingProgram);
     this.attestations.initialize(programs.axiomAttestationsProgram);
     this.payments.initialize(programs.axiomPaymentsProgram);
     this.slashing.initialize(programs.axiomSlashingProgram);
+    
+    // Initialize PoHW if provided
+    if (programs.axiomPoHWProgram) {
+      this.pohw.initialize(programs.axiomPoHWProgram);
+    }
+    
+    // Initialize dynamic staking if provided
+    if (programs.axiomStakingDynamicProgram) {
+      this.dynamicStaking.initialize(programs.axiomStakingDynamicProgram);
+    }
   }
 }
 
@@ -71,6 +91,8 @@ export * from './staking';
 export * from './attestations';
 export * from './payments';
 export * from './slashing';
+export * from './pohw';
+export * from './dynamic-staking';
 export * from './types';
 
 export default AxiomIDSDK;
