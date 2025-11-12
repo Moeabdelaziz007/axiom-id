@@ -12,11 +12,16 @@
     "clean": "rm -rf dist",
     "prebuild": "npm run clean",
     "test": "jest",
+    "test:integration": "jest test/integration",
     "examples:agent": "cd examples && npm run agent-example",
     "examples:langchain": "cd examples && npm run langchain-example",
     "examples:identity": "cd examples && npm run identity-example",
     "examples:pohw": "cd examples && npm run pohw-example",
-    "examples:dynamic-staking": "cd examples && npm run dynamic-staking-example"
+    "examples:dynamic-staking": "cd examples && npm run dynamic-staking-example",
+    "examples:solana-agent-kit": "cd examples && npm run solana-agent-kit-example",
+    "examples:defi-agent": "cd ../examples/agents && npm run defi-agent",
+    "examples:content-agent": "cd ../examples/agents && npm run content-agent",
+    "examples:research-agent": "cd ../examples/agents && npm run research-agent"
   },
   "keywords": [
     "axiom",
