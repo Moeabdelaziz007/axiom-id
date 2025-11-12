@@ -11,14 +11,19 @@
     "build": "tsc",
     "clean": "rm -rf dist",
     "prebuild": "npm run clean",
-    "test": "jest"
+    "test": "jest",
+    "examples:agent": "cd examples && npm run agent-example",
+    "examples:langchain": "cd examples && npm run langchain-example",
+    "examples:identity": "cd examples && npm run identity-example"
   },
   "keywords": [
     "axiom",
     "solana",
     "ai",
     "identity",
-    "agent"
+    "agent",
+    "solana-agent-kit",
+    "langchain"
   ],
   "author": "Axiom ID Team",
   "license": "MIT",

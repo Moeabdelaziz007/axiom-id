@@ -15,6 +15,7 @@ axiom_token = "6sKxhfHdQgjWBuoztEYonKepba2zGcN2QtWowCmAfWzD"
 axiom_governance = "7sKxhfHdQgjWBuoztEYonKepba2zGcN2QtWowCmAfWzD"
 axiom_payments = "8sKxhfHdQgjWBuoztEYonKepba2zGcN2QtWowCmAfWzD"
 axiom_slashing = "9sKxhfHdQgjWBuoztEYonKepba2zGcN2QtWowCmAfWzD"
+axiom_train_earn = "AsKxhfHdQgjWBuoztEYonKepba2zGcN2QtWowCmAfWzD"
 
 [registry]
 url = "https://api.apr.dev"
