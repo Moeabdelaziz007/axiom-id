@@ -4,7 +4,7 @@ use anchor_spl::{
     token_interface::{Mint, TokenAccount, Transfer, transfer},
 };
 
-declare_id!("ASTaKe111111111111111111111111111111111111111");
+declare_id!("ASTaKe1111111111111111111111111111111111111");
 
 #[program]
 pub mod axiom_staking {
@@ -37,16 +37,16 @@ pub mod axiom_staking {
         // Update user stake account
         let user_stake = &mut ctx.accounts.user_stake;
         user_stake.amount = user_stake.amount.checked_add(amount)
-            .ok_or(ProgramError::ArithmeticOverflow)?;
+            .ok_or(StakingError::Overflow)?;
         user_stake.reward_debt = user_stake.reward_debt.checked_add(
             ((amount as u128).checked_mul(ctx.accounts.pool.acc_reward_per_share)
-                .ok_or(ProgramError::ArithmeticOverflow)?) as u64
-        ).ok_or(ProgramError::ArithmeticOverflow)?;
+                .ok_or(StakingError::Overflow)?) as u64
+        ).ok_or(StakingError::Overflow)?;
 
         // Update pool
         let pool = &mut ctx.accounts.pool;
         pool.total_staked = pool.total_staked.checked_add(amount)
-            .ok_or(ProgramError::ArithmeticOverflow)?;
+            .ok_or(StakingError::Overflow)?;
 
         Ok(())
     }
@@ -62,9 +62,9 @@ pub mod axiom_staking {
         // Calculate pending rewards
         let pending_reward = (((user_stake.amount as u128)
             .checked_mul(ctx.accounts.pool.acc_reward_per_share)
-            .ok_or(ProgramError::ArithmeticOverflow)?) as u64)
+            .ok_or(StakingError::Overflow)?) as u64)
             .checked_sub(user_stake.reward_debt)
-            .ok_or(ProgramError::ArithmeticOverflow)?;
+            .ok_or(StakingError::Overflow)?;
 
         // Transfer staked tokens back to user
         let seeds = &[
@@ -101,15 +101,15 @@ pub mod axiom_staking {
 
         // Update user stake account
         user_stake.amount = user_stake.amount.checked_sub(amount)
-            .ok_or(ProgramError::ArithmeticOverflow)?;
+            .ok_or(StakingError::Overflow)?;
         user_stake.reward_debt = ((user_stake.amount as u128)
             .checked_mul(ctx.accounts.pool.acc_reward_per_share)
-            .ok_or(ProgramError::ArithmeticOverflow)?) as u64;
+            .ok_or(StakingError::Overflow)?) as u64;
 
         // Update pool
         let pool = &mut ctx.accounts.pool;
         pool.total_staked = pool.total_staked.checked_sub(amount)
-            .ok_or(ProgramError::ArithmeticOverflow)?;
+            .ok_or(StakingError::Overflow)?;
 
         Ok(())
     }
@@ -120,9 +120,9 @@ pub mod axiom_staking {
         // Calculate pending rewards
         let pending_reward = (((user_stake.amount as u128)
             .checked_mul(ctx.accounts.pool.acc_reward_per_share)
-            .ok_or(ProgramError::ArithmeticOverflow)?) as u64)
+            .ok_or(StakingError::Overflow)?) as u64)
             .checked_sub(user_stake.reward_debt)
-            .ok_or(ProgramError::ArithmeticOverflow)?;
+            .ok_or(StakingError::Overflow)?;
 
         if pending_reward > 0 {
             let seeds = &[
@@ -147,7 +147,7 @@ pub mod axiom_staking {
         // Update user stake account
         user_stake.reward_debt = ((user_stake.amount as u128)
             .checked_mul(ctx.accounts.pool.acc_reward_per_share)
-            .ok_or(ProgramError::ArithmeticOverflow)?) as u64;
+            .ok_or(StakingError::Overflow)?) as u64;
 
         Ok(())
     }
@@ -330,4 +330,7 @@ pub struct UserStake {
 pub enum StakingError {
     #[msg("Insufficient staked amount")]
     InsufficientStakedAmount,
+    
+    #[msg("Arithmetic overflow")]
+    Overflow,
 }

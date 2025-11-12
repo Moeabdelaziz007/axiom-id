@@ -109,7 +109,7 @@ pub mod axiom_id {
         // Update identity account
         let identity_account = &mut ctx.accounts.identity_account;
         identity_account.stake_amount = identity_account.stake_amount.checked_add(amount)
-            .ok_or(AxiomAgentError::Overflow.into())?;
+            .ok_or(error!(AxiomAgentError::Overflow))?;
 
         msg!("Staked {} tokens for identity: {}", amount, identity_account.key());
         Ok(())
@@ -139,7 +139,7 @@ pub mod axiom_id {
         // Update identity account
         let identity_account = &mut ctx.accounts.identity_account;
         identity_account.stake_amount = identity_account.stake_amount.checked_sub(amount)
-            .ok_or(AxiomAgentError::Overflow.into())?;
+            .ok_or(error!(AxiomAgentError::Overflow))?;
 
         // Record the slash event
         msg!("Slashed {} tokens from identity: {} for reason: {}", amount, identity_account.key(), reason);
@@ -153,7 +153,7 @@ pub mod axiom_id {
         // Update reputation with overflow protection
         if reputation_change >= 0 {
             identity_account.reputation = identity_account.reputation.checked_add(reputation_change as u64)
-                .ok_or(AxiomAgentError::Overflow.into())?;
+                .ok_or(error!(AxiomAgentError::Overflow))?;
         } else {
             let abs_change = reputation_change.abs() as u64;
             identity_account.reputation = identity_account.reputation.checked_sub(abs_change)
@@ -232,7 +232,7 @@ pub struct InitializeAgent<'info> {
         init,
         payer = authority,
         space = 8 + AgentMetadata::INIT_SPACE,
-        seeds = [b"agent-metadata", did.as_ref()],
+        seeds = [b"agent-metadata", did.key().as_ref()],
         bump
     )]
     pub agent_metadata: Account<'info, AgentMetadata>,
@@ -241,7 +241,7 @@ pub struct InitializeAgent<'info> {
     pub agent_pda: AccountInfo<'info>,
     
     // The DID of the agent
-    pub did: Pubkey,
+    pub did: AccountInfo<'info>,
     
     // The authority who is initializing the agent
     #[account(mut)]
