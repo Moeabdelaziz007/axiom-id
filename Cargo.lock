@@ -433,6 +433,14 @@ dependencies = [
 ]
 
 [[package]]
+name = "axiom_pohw"
+version = "0.1.0"
+dependencies = [
+ "anchor-lang",
+ "solana-program",
+]
+
+[[package]]
 name = "axiom_slashing"
 version = "0.1.0"
 dependencies = [
@@ -449,7 +457,24 @@ dependencies = [
 ]
 
 [[package]]
+name = "axiom_staking_dynamic"
+version = "0.1.0"
+dependencies = [
+ "anchor-lang",
+ "anchor-spl",
+ "solana-program",
+]
+
+[[package]]
 name = "axiom_token"
+version = "0.1.0"
+dependencies = [
+ "anchor-lang",
+ "anchor-spl",
+]
+
+[[package]]
+name = "axiom_train_earn"
 version = "0.1.0"
 dependencies = [
  "anchor-lang",
