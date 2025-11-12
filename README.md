@@ -89,6 +89,29 @@ Tests are written in TypeScript and can be found in the `tests/` directory.
 
 - `AxiomAiIdentity`: The main identity account structure
 
+## Contact Information
+
+- **Name**: Mohamed Hossameldin Abdelaziz
+- **Email**: amrikyy@gmail.com
+- **Student Email**: mabdela1@students.kennesaw.edu
+- **Phone (Egypt)**: +201094228044 (WhatsApp)
+- **Phone (US)**: +17706160211
+
+## Social Media
+
+- **GitHub**: https://github.com/Moeabdelaziz007/axiom-id
+- **Facebook**: https://www.facebook.com/profile.php?id=61583477974464&locale=ar_AR
+- **Instagram**: https://www.instagram.com/axiom_id/
+
+## Deployment Information
+
+The landing page is deployed to the custom domain: **axiomid.app**
+
+## Formspree Configuration
+
+The waiting list form is configured to submit data to Formspree endpoint: https://formspree.io/f/xblqrblj
+The form includes localStorage fallback functionality for offline/error scenarios.
+
 ## Contributing
 
 Contributions are welcome! Please feel free to submit a Pull Request.

@@ -3,6 +3,8 @@ import Problem from "./Problem";
 import Solution from "./Solution";
 import UseCases from "./UseCases";
 import CTA from "./CTA";
+import WaitingList from "./WaitingList";
+import Footer from "./Footer";
 
 export default function Home() {
   return (
@@ -11,7 +13,9 @@ export default function Home() {
       <Problem />
       <Solution />
       <UseCases />
+      <WaitingList />
       <CTA />
+      <Footer />
     </main>
   );
 }

@@ -16,9 +16,6 @@ export default function Hero() {
           <button className="bg-primary text-white px-8 py-3 rounded-lg font-semibold hover-primary transition-colors">
             Read The Whitepaper
           </button>
-          <button className="bg-secondary text-white px-8 py-3 rounded-lg font-semibold hover:bg-secondary-hover transition-colors">
-            Join Discord
-          </button>
         </div>
       </div>
     </section>

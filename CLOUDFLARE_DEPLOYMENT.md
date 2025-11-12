@@ -26,13 +26,13 @@
    - **Framework preset**: Next.js
    - **Build command**: `npm run build`
    - **Build output directory**: `.next` (leave as default)
-   - **Root directory (path)**: `axiom_id` ← THIS IS CRITICAL!
+   - **Root directory (path)**: Leave empty (project is in root directory)
    - **Environment variables**: 
-     - `NODE_VERSION` = `18` (or higher)
+     - `NODE_VERSION` = `20` (or higher)
 
 5. **Environment Variables** (if needed)
    - Add any environment variables your app needs
-   - Example: `NODE_VERSION = 18`
+   - Example: `NODE_VERSION = 20`
 
 6. **Deploy**
    - Click "Save and Deploy"
@@ -48,8 +48,7 @@ npm install -g wrangler
 # Login to Cloudflare
 wrangler login
 
-# Deploy from axiom_id directory
-cd axiom_id
+# Deploy from project directory
 npx @cloudflare/next-on-pages
 
 # Deploy
@@ -69,18 +68,20 @@ wrangler pages deploy .vercel/output/static --project-name=axiom-id
 
 ## 🔧 Configuration Changes Made
 
-1. **Removed `output: 'export'`** from `next.config.js`
-   - Your app now supports full Next.js features (SSR, API routes, etc.)
+1. **Project Structure**
+   - The project is now in the root directory (not in a subdirectory)
+   - No need to specify a root directory in Cloudflare settings
 
-2. **Updated `cloudflare.json`**
-   - Configured for Next.js SSR deployment
-   - Added Node.js compatibility flags
+2. **Updated Deployment Process**
+   - Using `npx @cloudflare/next-on-pages` for building
+   - Deploying with `wrangler pages deploy .vercel/output/static --project-name=axiom-id`
 
 ## 🎯 Next Steps After Deployment
 
 1. **Custom Domain** (Optional)
    - Go to your Pages project → Custom domains
    - Add your domain and update DNS records
+   - Current custom domain: **axiomid.app**
 
 2. **Environment Variables**
    - Set production environment variables in Cloudflare dashboard
@@ -102,7 +103,7 @@ wrangler pages deploy .vercel/output/static --project-name=axiom-id
 
 If deployment fails:
 1. Check build logs in Cloudflare dashboard
-2. Ensure `NODE_VERSION` environment variable is set to 18+
+2. Ensure `NODE_VERSION` environment variable is set to 20+
 3. Verify `package.json` has all dependencies
 4. Check that build command succeeds locally: `npm run build`
 
@@ -111,3 +112,24 @@ If deployment fails:
 - [Cloudflare Pages Docs](https://developers.cloudflare.com/pages/)
 - [Next.js on Cloudflare](https://developers.cloudflare.com/pages/framework-guides/nextjs/)
 - [Pricing Details](https://developers.cloudflare.com/pages/platform/limits/)
+
+## 📞 Contact Information
+
+For questions or support regarding this deployment:
+
+- **Name**: Mohamed Hossameldin Abdelaziz
+- **Email**: amrikyy@gmail.com
+- **Student Email**: mabdela1@students.kennesaw.edu
+- **Phone (Egypt)**: +201094228044 (WhatsApp)
+- **Phone (US)**: +17706160211
+
+## 🔗 Social Media Links
+
+- **GitHub**: https://github.com/Moeabdelaziz007/axiom-id
+- **Facebook**: https://www.facebook.com/profile.php?id=61583477974464&locale=ar_AR
+- **Instagram**: https://www.instagram.com/axiom_id/
+
+## 📧 Formspree Configuration
+
+The waiting list form is configured to submit data to Formspree endpoint: https://formspree.io/f/xblqrblj
+The form includes localStorage fallback functionality for offline/error scenarios.
