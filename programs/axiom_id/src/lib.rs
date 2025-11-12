@@ -12,6 +12,38 @@ declare_id!("5E7eosX9X34CWCeGpw2C4ua2JRYTZqZ8MsFkxj3y6T7C");
 pub mod axiom_id {
     use super::*;
     
+    // Initialize an agent with Cryptid integration
+    pub fn initialize_agent(ctx: Context<InitializeAgent>, did: Pubkey) -> Result<()> {
+        let agent_metadata = &mut ctx.accounts.agent_metadata;
+        agent_metadata.did = did;
+        agent_metadata.soul_mint = Pubkey::default(); // Not minted yet
+        agent_metadata.agent_pda = ctx.accounts.agent_pda.key();
+        agent_metadata.version = 1;
+        agent_metadata.bump = ctx.bumps.agent_metadata;
+        
+        msg!("Agent initialized with DID: {}", did);
+        Ok(())
+    }
+    
+    // Mint a soul-bound token to an agent
+    pub fn mint_soul_to_agent(ctx: Context<MintSoulToAgent>) -> Result<()> {
+        // Verify that the soul hasn't been minted yet
+        require!(
+            ctx.accounts.agent_metadata.soul_mint == Pubkey::default(),
+            AxiomAgentError::SoulAlreadyMinted
+        );
+        
+        // In a real implementation, we would perform CPIs to the Token-2022 program
+        // to create a non-transferable mint and mint the soul token to the agent's ATA
+        
+        // For now, we'll just update the agent metadata to point to the soul mint
+        let agent_metadata = &mut ctx.accounts.agent_metadata;
+        agent_metadata.soul_mint = ctx.accounts.soul_mint.key();
+        
+        msg!("Soul minted to agent: {}", ctx.accounts.agent_pda.key());
+        Ok(())
+    }
+
     // THIS IS OUR NEW FUNCTION!
     // This function creates (initializes) a new AxiomAiIdentity account.
     pub fn create_identity(ctx: Context<CreateIdentity>, persona: String, stake_amount: u64) -> Result<()> {
@@ -77,7 +109,7 @@ pub mod axiom_id {
         // Update identity account
         let identity_account = &mut ctx.accounts.identity_account;
         identity_account.stake_amount = identity_account.stake_amount.checked_add(amount)
-            .ok_or(ProgramError::ArithmeticOverflow)?;
+            .ok_or(AxiomAgentError::Overflow.into())?;
 
         msg!("Staked {} tokens for identity: {}", amount, identity_account.key());
         Ok(())
@@ -107,7 +139,7 @@ pub mod axiom_id {
         // Update identity account
         let identity_account = &mut ctx.accounts.identity_account;
         identity_account.stake_amount = identity_account.stake_amount.checked_sub(amount)
-            .ok_or(ProgramError::ArithmeticOverflow)?;
+            .ok_or(AxiomAgentError::Overflow.into())?;
 
         // Record the slash event
         msg!("Slashed {} tokens from identity: {} for reason: {}", amount, identity_account.key(), reason);
@@ -121,7 +153,7 @@ pub mod axiom_id {
         // Update reputation with overflow protection
         if reputation_change >= 0 {
             identity_account.reputation = identity_account.reputation.checked_add(reputation_change as u64)
-                .ok_or(ProgramError::ArithmeticOverflow)?;
+                .ok_or(AxiomAgentError::Overflow.into())?;
         } else {
             let abs_change = reputation_change.abs() as u64;
             identity_account.reputation = identity_account.reputation.checked_sub(abs_change)
@@ -131,6 +163,27 @@ pub mod axiom_id {
         msg!("Updated reputation for identity: {} to {}", identity_account.key(), identity_account.reputation);
         Ok(())
     }
+}
+
+// Agent Metadata account structure
+#[account]
+#[derive(InitSpace)]
+pub struct AgentMetadata {
+    // The public key of the agent's did:sol (used as "seed" for this account)
+    pub did: Pubkey,
+    
+    // Address of the Soul Mint associated with this agent
+    // Is `Pubkey::default()` or `None` until minted
+    pub soul_mint: Pubkey,
+    
+    // Actual Cryptid PDA address (derived and stored)
+    pub agent_pda: Pubkey,
+    
+    // Version of this data structure for future updates
+    pub version: u8,
+    
+    // Bump seed for this PDA
+    pub bump: u8,
 }
 
 // --- 2. ADDED A HELPER CALCULATION ---
@@ -171,8 +224,54 @@ impl AxiomAiIdentity {
         1; // is_soul_bound: bool
 }
 
-
 // --- 3. ADDED THE ACCOUNTS CONTEXT FOR 'create_identity' ---
+#[derive(Accounts)]
+pub struct InitializeAgent<'info> {
+    // Agent metadata account (PDA)
+    #[account(
+        init,
+        payer = authority,
+        space = 8 + AgentMetadata::INIT_SPACE,
+        seeds = [b"agent-metadata", did.as_ref()],
+        bump
+    )]
+    pub agent_metadata: Account<'info, AgentMetadata>,
+    
+    /// CHECK: This is the Cryptid PDA that will be verified in the instruction
+    pub agent_pda: AccountInfo<'info>,
+    
+    // The DID of the agent
+    pub did: Pubkey,
+    
+    // The authority who is initializing the agent
+    #[account(mut)]
+    pub authority: Signer<'info>,
+    
+    pub system_program: Program<'info, System>,
+}
+
+#[derive(Accounts)]
+pub struct MintSoulToAgent<'info> {
+    // Agent metadata account (PDA)
+    #[account(
+        mut,
+        seeds = [b"agent-metadata", agent_metadata.did.as_ref()],
+        bump = agent_metadata.bump
+    )]
+    pub agent_metadata: Account<'info, AgentMetadata>,
+    
+    /// CHECK: This is the Cryptid PDA that controls the soul
+    pub agent_pda: AccountInfo<'info>,
+    
+    /// CHECK: This is the soul mint that will be created
+    pub soul_mint: AccountInfo<'info>,
+    
+    #[account(mut)]
+    pub authority: Signer<'info>,
+    
+    pub system_program: Program<'info, System>,
+}
+
 #[derive(Accounts)]
 pub struct CreateIdentity<'info> {
     
@@ -293,3 +392,12 @@ pub struct UpdateReputation<'info> {
 // This is just a default struct for our placeholder 'initialize' function.
 #[derive(Accounts)]
 pub struct Initialize {}
+
+#[error_code]
+pub enum AxiomAgentError {
+    #[msg("Soul has already been minted for this agent")]
+    SoulAlreadyMinted,
+    
+    #[msg("Arithmetic overflow")]
+    Overflow,
+}
