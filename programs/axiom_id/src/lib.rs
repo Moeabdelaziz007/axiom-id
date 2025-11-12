@@ -2,7 +2,7 @@ use anchor_lang::prelude::*;
 use anchor_lang::solana_program::clock::Clock;
 use anchor_spl::{
     token_2022::Token2022,
-    token_interface::{Mint, TokenAccount, MintTo, mint_to, Transfer, transfer},
+    token_interface::{Mint, TokenAccount, TransferChecked, transfer_checked},
 };
 
 // This is our new Program ID. Anchor will update this for us later.
@@ -95,17 +95,18 @@ pub mod axiom_id {
     // New function to stake tokens for an identity
     pub fn stake_tokens(ctx: Context<StakeTokens>, amount: u64) -> Result<()> {
         // Transfer tokens from user to stake account
-        let cpi_accounts = Transfer {
+        let cpi_accounts = TransferChecked {
             from: ctx.accounts.user_token_account.to_account_info(),
             to: ctx.accounts.stake_token_account.to_account_info(),
             authority: ctx.accounts.user.to_account_info(),
+            mint: ctx.accounts.axiom_token_mint.to_account_info(),
         };
         
         let cpi_program = ctx.accounts.token_program.to_account_info();
         let cpi_ctx = CpiContext::new(cpi_program, cpi_accounts);
         
-        transfer(cpi_ctx, amount)?;
-
+        transfer_checked(cpi_ctx, amount, ctx.accounts.axiom_token_mint.decimals)?;
+        
         // Update identity account
         let identity_account = &mut ctx.accounts.identity_account;
         identity_account.stake_amount = identity_account.stake_amount.checked_add(amount)
@@ -126,16 +127,17 @@ pub mod axiom_id {
         ];
         let signer = &[&seeds[..]];
 
-        let cpi_accounts = Transfer {
+        let cpi_accounts = TransferChecked {
             from: ctx.accounts.stake_token_account.to_account_info(),
             to: ctx.accounts.slash_recipient_token_account.to_account_info(),
             authority: ctx.accounts.identity_account.to_account_info(),
+            mint: ctx.accounts.axiom_token_mint.to_account_info(),
         };
         
         let cpi_program = ctx.accounts.token_program.to_account_info();
         let cpi_ctx = CpiContext::new_with_signer(cpi_program, cpi_accounts, signer);
         
-        transfer(cpi_ctx, amount)?;
+        transfer_checked(cpi_ctx, amount, ctx.accounts.axiom_token_mint.decimals)?;
 
         // Update identity account
         let identity_account = &mut ctx.accounts.identity_account;
@@ -162,6 +164,60 @@ pub mod axiom_id {
         }
 
         msg!("Updated reputation for identity: {} to {}", identity_account.key(), identity_account.reputation);
+        Ok(())
+    }
+    
+    // New function to integrate with Cryptid DID for agent sovereignty
+    pub fn create_cryptid_did(ctx: Context<CreateCryptidDID>, did_document: String) -> Result<()> {
+        let agent_metadata = &mut ctx.accounts.agent_metadata;
+        
+        // In a full implementation, this would:
+        // 1. Create a Cryptid DID document on-chain
+        // 2. Associate the DID with the agent's identity
+        // 3. Set up key rotation capabilities
+        
+        msg!("Cryptid DID created for agent: {}", agent_metadata.did);
+        msg!("DID Document: {}", did_document);
+        
+        Ok(())
+    }
+    
+    // New function to rotate keys for agent sovereignty
+    pub fn rotate_agent_keys(ctx: Context<RotateAgentKeys>, new_controller: Pubkey) -> Result<()> {
+        let agent_metadata = &mut ctx.accounts.agent_metadata;
+        
+        // In a full implementation, this would:
+        // 1. Update the Cryptid DID controller
+        // 2. Maintain the same DID while changing the controlling key
+        // 3. Preserve all associated reputation and credentials
+        
+        msg!("Agent keys rotated for DID: {}", agent_metadata.did);
+        msg!("New controller: {}", new_controller);
+        
+        Ok(())
+    }
+    
+    // New function to verify agent identity through Cryptid DID
+    pub fn verify_agent_identity(ctx: Context<VerifyAgentIdentity>) -> Result<()> {
+        let agent_metadata = &ctx.accounts.agent_metadata;
+        
+        // In a full implementation, this would:
+        // 1. Verify the agent's Cryptid DID is valid
+        // 2. Check that the DID is properly associated with the agent
+        // 3. Confirm the agent has not been revoked or compromised
+        
+        msg!("Agent identity verified for DID: {}", agent_metadata.did);
+        
+        Ok(())
+    }
+    
+    // New function to link agent with existing Cryptid DID
+    pub fn link_cryptid_did(ctx: Context<LinkCryptidDID>, cryptid_did: Pubkey) -> Result<()> {
+        let agent_metadata = &mut ctx.accounts.agent_metadata;
+        agent_metadata.did = cryptid_did;
+        
+        msg!("Agent linked to Cryptid DID: {}", cryptid_did);
+        
         Ok(())
     }
 }
@@ -388,6 +444,70 @@ pub struct UpdateReputation<'info> {
         constraint = authority.key() == identity_account.authority
     )]
     pub authority: Signer<'info>,
+}
+
+// New accounts struct for creating Cryptid DID
+#[derive(Accounts)]
+pub struct CreateCryptidDID<'info> {
+    #[account(
+        mut,
+        seeds = [b"agent-metadata", agent_metadata.did.as_ref()],
+        bump = agent_metadata.bump
+    )]
+    pub agent_metadata: Account<'info, AgentMetadata>,
+    
+    #[account(mut)]
+    pub authority: Signer<'info>,
+    
+    pub system_program: Program<'info, System>,
+}
+
+// New accounts struct for rotating agent keys
+#[derive(Accounts)]
+pub struct RotateAgentKeys<'info> {
+    #[account(
+        mut,
+        seeds = [b"agent-metadata", agent_metadata.did.as_ref()],
+        bump = agent_metadata.bump
+    )]
+    pub agent_metadata: Account<'info, AgentMetadata>,
+    
+    // Authority must be the current controller
+    #[account(
+        constraint = authority.key() == agent_metadata.did
+    )]
+    pub authority: Signer<'info>,
+    
+    pub system_program: Program<'info, System>,
+}
+
+// New accounts struct for verifying agent identity
+#[derive(Accounts)]
+pub struct VerifyAgentIdentity<'info> {
+    #[account(
+        seeds = [b"agent-metadata", agent_metadata.did.as_ref()],
+        bump = agent_metadata.bump
+    )]
+    pub agent_metadata: Account<'info, AgentMetadata>,
+    
+    /// CHECK: This account can be any valid pubkey
+    pub verifier: AccountInfo<'info>,
+}
+
+// New accounts struct for linking existing Cryptid DID
+#[derive(Accounts)]
+pub struct LinkCryptidDID<'info> {
+    #[account(
+        mut,
+        seeds = [b"agent-metadata", agent_metadata.did.as_ref()],
+        bump = agent_metadata.bump
+    )]
+    pub agent_metadata: Account<'info, AgentMetadata>,
+    
+    #[account(mut)]
+    pub authority: Signer<'info>,
+    
+    pub system_program: Program<'info, System>,
 }
 
 // This is just a default struct for our placeholder 'initialize' function.

@@ -409,6 +409,14 @@ dependencies = [
 ]
 
 [[package]]
+name = "axiom_governance"
+version = "0.1.0"
+dependencies = [
+ "anchor-lang",
+ "anchor-spl",
+]
+
+[[package]]
 name = "axiom_id"
 version = "0.1.0"
 dependencies = [
@@ -417,7 +425,31 @@ dependencies = [
 ]
 
 [[package]]
+name = "axiom_payments"
+version = "0.1.0"
+dependencies = [
+ "anchor-lang",
+ "anchor-spl",
+]
+
+[[package]]
+name = "axiom_slashing"
+version = "0.1.0"
+dependencies = [
+ "anchor-lang",
+ "anchor-spl",
+]
+
+[[package]]
 name = "axiom_staking"
+version = "0.1.0"
+dependencies = [
+ "anchor-lang",
+ "anchor-spl",
+]
+
+[[package]]
+name = "axiom_token"
 version = "0.1.0"
 dependencies = [
  "anchor-lang",

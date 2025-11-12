@@ -11,6 +11,10 @@ axiom_id = "5E7eosX9X34CWCeGpw2C4ua2JRYTZqZ8MsFkxj3y6T7C"
 agent_soul_factory = "2sKxhfHdQgjWBuoztEYonKepba2zGcN2QtWowCmAfWzD"
 axiom_staking = "3sKxhfHdQgjWBuoztEYonKepba2zGcN2QtWowCmAfWzD"
 axiom_attestations = "4sKxhfHdQgjWBuoztEYonKepba2zGcN2QtWowCmAfWzD"
+axiom_token = "6sKxhfHdQgjWBuoztEYonKepba2zGcN2QtWowCmAfWzD"
+axiom_governance = "7sKxhfHdQgjWBuoztEYonKepba2zGcN2QtWowCmAfWzD"
+axiom_payments = "8sKxhfHdQgjWBuoztEYonKepba2zGcN2QtWowCmAfWzD"
+axiom_slashing = "9sKxhfHdQgjWBuoztEYonKepba2zGcN2QtWowCmAfWzD"
 
 [registry]
 url = "https://api.apr.dev"
