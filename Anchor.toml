@@ -8,9 +8,9 @@ skip-lint = false
 
 [programs.devnet]
 axiom_id = "5E7eosX9X34CWCeGpw2C4ua2JRYTZqZ8MsFkxj3y6T7C"
-agent_soul_factory = "ASoULfAcToRY1111111111111111111111111111111"
-axiom_staking = "ASTaKe111111111111111111111111111111111111111"
-axiom_attestations = "ATTeStAtIoN111111111111111111111111111111111"
+agent_soul_factory = "2sKxhfHdQgjWBuoztEYonKepba2zGcN2QtWowCmAfWzD"
+axiom_staking = "3sKxhfHdQgjWBuoztEYonKepba2zGcN2QtWowCmAfWzD"
+axiom_attestations = "4sKxhfHdQgjWBuoztEYonKepba2zGcN2QtWowCmAfWzD"
 
 [registry]
 url = "https://api.apr.dev"

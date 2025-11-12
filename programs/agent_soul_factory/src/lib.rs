@@ -13,7 +13,7 @@ use anchor_spl::{
     },
 };
 
-declare_id!("ASoULfAcToRY1111111111111111111111111111111");
+declare_id!("2sKxhfHdQgjWBuoztEYonKepba2zGcN2QtWowCmAfWzD");
 
 #[program]
 pub mod agent_soul_factory {
@@ -52,9 +52,10 @@ pub mod agent_soul_factory {
         };
         
         let cpi_program = ctx.accounts.token_program.to_account_info();
+        let bump = *ctx.bumps.get("agent_soul_factory").unwrap();
         let seeds = &[
-            b"agent-soul-factory",
-            &[ctx.bumps.agent_soul_factory],
+            b"agent-soul-factory".as_ref(),
+            &[bump],
         ];
         let signer = &[&seeds[..]];
         let cpi_ctx = CpiContext::new_with_signer(cpi_program, cpi_accounts, signer);

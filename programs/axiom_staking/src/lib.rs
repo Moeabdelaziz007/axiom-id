@@ -1,10 +1,10 @@
 use anchor_lang::prelude::*;
 use anchor_spl::{
     token_2022::Token2022,
-    token_interface::{Mint, TokenAccount, Transfer, transfer},
+    token_interface::{Mint, TokenAccount, Transfer, transfer, transfer_checked},
 };
 
-declare_id!("ASTaKe1111111111111111111111111111111111111");
+declare_id!("3sKxhfHdQgjWBuoztEYonKepba2zGcN2QtWowCmAfWzD");
 
 #[program]
 pub mod axiom_staking {
@@ -17,6 +17,8 @@ pub mod axiom_staking {
         pool.reward_token_mint = ctx.accounts.reward_token_mint.key();
         pool.reward_rate = reward_rate;
         pool.total_staked = 0;
+        pool.acc_reward_per_share = 0;
+        pool.last_reward_time = Clock::get()?.unix_timestamp;
         
         Ok(())
     }
@@ -39,7 +41,7 @@ pub mod axiom_staking {
         user_stake.amount = user_stake.amount.checked_add(amount)
             .ok_or(StakingError::Overflow)?;
         user_stake.reward_debt = user_stake.reward_debt.checked_add(
-            ((amount as u128).checked_mul(ctx.accounts.pool.acc_reward_per_share)
+            ((amount as u64).checked_mul(ctx.accounts.pool.acc_reward_per_share as u64)
                 .ok_or(StakingError::Overflow)?) as u64
         ).ok_or(StakingError::Overflow)?;
 
@@ -60,17 +62,18 @@ pub mod axiom_staking {
         }
 
         // Calculate pending rewards
-        let pending_reward = (((user_stake.amount as u128)
-            .checked_mul(ctx.accounts.pool.acc_reward_per_share)
+        let pending_reward = (((user_stake.amount as u64)
+            .checked_mul(ctx.accounts.pool.acc_reward_per_share as u64)
             .ok_or(StakingError::Overflow)?) as u64)
             .checked_sub(user_stake.reward_debt)
             .ok_or(StakingError::Overflow)?;
 
         // Transfer staked tokens back to user
+        let staked_token_mint_key = ctx.accounts.staked_token_mint.key();
         let seeds = &[
             b"staking-pool",
-            ctx.accounts.pool.staked_token_mint.as_ref(),
-            &[ctx.bumps.pool],
+            staked_token_mint_key.as_ref(),
+            &[ctx.bumps["pool"]],
         ];
         let signer = &[&seeds[..]];
 
@@ -87,48 +90,11 @@ pub mod axiom_staking {
 
         // Transfer rewards to user
         if pending_reward > 0 {
-            let cpi_accounts = Transfer {
-                from: ctx.accounts.reward_token_account.to_account_info(),
-                to: ctx.accounts.user_reward_token_account.to_account_info(),
-                authority: ctx.accounts.pool.to_account_info(),
-            };
-            
-            let cpi_program = ctx.accounts.token_program.to_account_info();
-            let cpi_ctx = CpiContext::new_with_signer(cpi_program, cpi_accounts, signer);
-            
-            transfer(cpi_ctx, pending_reward)?;
-        }
-
-        // Update user stake account
-        user_stake.amount = user_stake.amount.checked_sub(amount)
-            .ok_or(StakingError::Overflow)?;
-        user_stake.reward_debt = ((user_stake.amount as u128)
-            .checked_mul(ctx.accounts.pool.acc_reward_per_share)
-            .ok_or(StakingError::Overflow)?) as u64;
-
-        // Update pool
-        let pool = &mut ctx.accounts.pool;
-        pool.total_staked = pool.total_staked.checked_sub(amount)
-            .ok_or(StakingError::Overflow)?;
-
-        Ok(())
-    }
-
-    pub fn claim_rewards(ctx: Context<ClaimRewards>) -> Result<()> {
-        let user_stake = &mut ctx.accounts.user_stake;
-        
-        // Calculate pending rewards
-        let pending_reward = (((user_stake.amount as u128)
-            .checked_mul(ctx.accounts.pool.acc_reward_per_share)
-            .ok_or(StakingError::Overflow)?) as u64)
-            .checked_sub(user_stake.reward_debt)
-            .ok_or(StakingError::Overflow)?;
-
-        if pending_reward > 0 {
+            let staked_token_mint_key = ctx.accounts.staked_token_mint.key();
             let seeds = &[
                 b"staking-pool",
-                ctx.accounts.pool.staked_token_mint.as_ref(),
-                &[ctx.bumps.pool],
+                staked_token_mint_key.as_ref(),
+                &[ctx.bumps["pool"]],
             ];
             let signer = &[&seeds[..]];
 
@@ -145,8 +111,54 @@ pub mod axiom_staking {
         }
 
         // Update user stake account
-        user_stake.reward_debt = ((user_stake.amount as u128)
-            .checked_mul(ctx.accounts.pool.acc_reward_per_share)
+        user_stake.amount = user_stake.amount.checked_sub(amount)
+            .ok_or(StakingError::Overflow)?;
+        user_stake.reward_debt = ((user_stake.amount as u64)
+            .checked_mul(ctx.accounts.pool.acc_reward_per_share as u64)
+            .ok_or(StakingError::Overflow)?) as u64;
+
+        // Update pool
+        let pool = &mut ctx.accounts.pool;
+        pool.total_staked = pool.total_staked.checked_sub(amount)
+            .ok_or(StakingError::Overflow)?;
+
+        Ok(())
+    }
+
+    pub fn claim_rewards(ctx: Context<ClaimRewards>) -> Result<()> {
+        let user_stake = &mut ctx.accounts.user_stake;
+        
+        // Calculate pending rewards
+        let pending_reward = (((user_stake.amount as u64)
+            .checked_mul(ctx.accounts.pool.acc_reward_per_share as u64)
+            .ok_or(StakingError::Overflow)?) as u64)
+            .checked_sub(user_stake.reward_debt)
+            .ok_or(StakingError::Overflow)?;
+
+        if pending_reward > 0 {
+            let staked_token_mint_key = ctx.accounts.staked_token_mint.key();
+            let seeds = &[
+                b"staking-pool",
+                staked_token_mint_key.as_ref(),
+                &[ctx.bumps["pool"]],
+            ];
+            let signer = &[&seeds[..]];
+
+            let cpi_accounts = Transfer {
+                from: ctx.accounts.reward_token_account.to_account_info(),
+                to: ctx.accounts.user_reward_token_account.to_account_info(),
+                authority: ctx.accounts.pool.to_account_info(),
+            };
+            
+            let cpi_program = ctx.accounts.token_program.to_account_info();
+            let cpi_ctx = CpiContext::new_with_signer(cpi_program, cpi_accounts, signer);
+            
+            transfer(cpi_ctx, pending_reward)?;
+        }
+
+        // Update user stake account
+        user_stake.reward_debt = ((user_stake.amount as u64)
+            .checked_mul(ctx.accounts.pool.acc_reward_per_share as u64)
             .ok_or(StakingError::Overflow)?) as u64;
 
         Ok(())
@@ -183,7 +195,7 @@ pub struct StakeTokens<'info> {
     pub pool: Account<'info, StakingPool>,
     
     #[account(
-        init_if_needed,
+        init,
         payer = user,
         space = 8 + UserStake::INIT_SPACE,
         seeds = [b"user-stake", pool.key().as_ref(), user.key().as_ref()],
@@ -298,6 +310,7 @@ pub struct ClaimRewards<'info> {
     )]
     pub user_reward_token_account: InterfaceAccount<'info, TokenAccount>,
     
+    pub staked_token_mint: InterfaceAccount<'info, Mint>,
     pub reward_token_mint: InterfaceAccount<'info, Mint>,
     
     #[account(mut)]

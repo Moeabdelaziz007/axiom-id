@@ -19,7 +19,7 @@ pub mod axiom_id {
         agent_metadata.soul_mint = Pubkey::default(); // Not minted yet
         agent_metadata.agent_pda = ctx.accounts.agent_pda.key();
         agent_metadata.version = 1;
-        agent_metadata.bump = ctx.bumps.agent_metadata;
+        agent_metadata.bump = *ctx.bumps.get("agent_metadata").unwrap();
         
         msg!("Agent initialized with DID: {}", did);
         Ok(())
@@ -118,10 +118,11 @@ pub mod axiom_id {
     // New function to slash tokens from an identity
     pub fn slash_tokens(ctx: Context<SlashTokens>, amount: u64, reason: String) -> Result<()> {
         // Transfer tokens from stake account to slash recipient
+        let bump = *ctx.bumps.get("identity_account").unwrap();
         let seeds = &[
             b"axiom-identity",
             ctx.accounts.identity_account.authority.as_ref(),
-            &[ctx.bumps.identity_account],
+            &[bump],
         ];
         let signer = &[&seeds[..]];
 

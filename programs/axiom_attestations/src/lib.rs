@@ -1,7 +1,7 @@
 use anchor_lang::prelude::*;
 use anchor_spl::token_interface::Mint;
 
-declare_id!("ATTeStAtIoN111111111111111111111111111111111");
+declare_id!("4sKxhfHdQgjWBuoztEYonKepba2zGcN2QtWowCmAfWzD");
 
 #[program]
 pub mod axiom_attestations {
@@ -11,6 +11,7 @@ pub mod axiom_attestations {
         let attestation_config = &mut ctx.accounts.attestation_config;
         attestation_config.authority = authority;
         attestation_config.total_attestations = 0;
+        attestation_config.bump = *ctx.bumps.get("attestation_config").unwrap();
         
         Ok(())
     }
@@ -24,7 +25,7 @@ pub mod axiom_attestations {
         schema.authority = ctx.accounts.authority.key();
         schema.name = name;
         schema.description = description;
-        schema.bump = ctx.bumps.schema;
+        schema.bump = *ctx.bumps.get("schema").unwrap();
         
         Ok(())
     }
@@ -42,12 +43,12 @@ pub mod axiom_attestations {
         attestation.expiration = expiration;
         attestation.revoked = false;
         attestation.timestamp = Clock::get()?.unix_timestamp;
-        attestation.bump = ctx.bumps.attestation;
+        attestation.bump = *ctx.bumps.get("attestation").unwrap();
         
         // Update the total attestations count
         let attestation_config = &mut ctx.accounts.attestation_config;
         attestation_config.total_attestations = attestation_config.total_attestations.checked_add(1)
-            .ok_or(AttestationError::Overflow)?;
+            .ok_or(error!(AttestationError::Overflow))?;
         
         Ok(())
     }
@@ -81,6 +82,7 @@ pub struct Initialize<'info> {
 }
 
 #[derive(Accounts)]
+#[instruction(name: String)]
 pub struct CreateAttestationSchema<'info> {
     #[account(
         init,
@@ -92,6 +94,7 @@ pub struct CreateAttestationSchema<'info> {
     pub schema: Account<'info, AttestationSchema>,
     
     #[account(
+        mut,
         constraint = authority.key() == attestation_config.authority
     )]
     pub authority: Signer<'info>,
@@ -102,13 +105,11 @@ pub struct CreateAttestationSchema<'info> {
     )]
     pub attestation_config: Account<'info, AttestationConfig>,
     
-    #[account(mut)]
-    pub authority: Signer<'info>,
-    
     pub system_program: Program<'info, System>,
 }
 
 #[derive(Accounts)]
+#[instruction(claim: String)]
 pub struct IssueAttestation<'info> {
     #[account(
         init,
