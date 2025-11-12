@@ -8,13 +8,15 @@ skip-lint = false
 
 [programs.devnet]
 axiom_id = "5E7eosX9X34CWCeGpw2C4ua2JRYTZqZ8MsFkxj3y6T7C"
+agent_soul_factory = "ASoULfAcToRY1111111111111111111111111111111"
+axiom_staking = "ASTaKe111111111111111111111111111111111111111"
 
 [registry]
 url = "https://api.apr.dev"
 
 [provider]
 cluster = "devnet"
-wallet = "~/.config/solana/id.json"
+wallet = "/tmp/test_wallet.json"
 
 [scripts]
 test = "yarn run ts-mocha -p ./tsconfig.json -t 1000000 \"tests/**/*.ts\""

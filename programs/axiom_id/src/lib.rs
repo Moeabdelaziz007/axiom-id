@@ -1,7 +1,9 @@
-// This is the main program file: programs/axiom_id/src/lib.rs
-
 use anchor_lang::prelude::*;
-use anchor_lang::solana_program::clock::Clock; // <-- 1. Import Clock to get time
+use anchor_lang::solana_program::clock::Clock;
+use anchor_spl::{
+    token_2022::Token2022,
+    token_interface::{Mint, TokenAccount, MintTo, mint_to, Transfer, transfer},
+};
 
 // This is our new Program ID. Anchor will update this for us later.
 declare_id!("5E7eosX9X34CWCeGpw2C4ua2JRYTZqZ8MsFkxj3y6T7C");
@@ -29,6 +31,7 @@ pub mod axiom_id {
         identity_account.reputation = 0; // New accounts start with 0 reputation
         identity_account.created_at = clock.unix_timestamp; // Set "birth" date
         identity_account.stake_amount = stake_amount; // Record the stake amount
+        identity_account.is_soul_bound = true; // Mark as soul-bound token
 
         // Log a message to the console
         msg!("Axiom ID Created: {}", identity_account.key());
@@ -56,6 +59,78 @@ pub mod axiom_id {
         msg!("Identity account data fetched for: {}", ctx.accounts.authority.key());
         Ok(())
     }
+
+    // New function to stake tokens for an identity
+    pub fn stake_tokens(ctx: Context<StakeTokens>, amount: u64) -> Result<()> {
+        // Transfer tokens from user to stake account
+        let cpi_accounts = Transfer {
+            from: ctx.accounts.user_token_account.to_account_info(),
+            to: ctx.accounts.stake_token_account.to_account_info(),
+            authority: ctx.accounts.user.to_account_info(),
+        };
+        
+        let cpi_program = ctx.accounts.token_program.to_account_info();
+        let cpi_ctx = CpiContext::new(cpi_program, cpi_accounts);
+        
+        transfer(cpi_ctx, amount)?;
+
+        // Update identity account
+        let identity_account = &mut ctx.accounts.identity_account;
+        identity_account.stake_amount = identity_account.stake_amount.checked_add(amount)
+            .ok_or(ProgramError::ArithmeticOverflow)?;
+
+        msg!("Staked {} tokens for identity: {}", amount, identity_account.key());
+        Ok(())
+    }
+
+    // New function to slash tokens from an identity
+    pub fn slash_tokens(ctx: Context<SlashTokens>, amount: u64, reason: String) -> Result<()> {
+        // Transfer tokens from stake account to slash recipient
+        let seeds = &[
+            b"axiom-identity",
+            ctx.accounts.identity_account.authority.as_ref(),
+            &[ctx.bumps.identity_account],
+        ];
+        let signer = &[&seeds[..]];
+
+        let cpi_accounts = Transfer {
+            from: ctx.accounts.stake_token_account.to_account_info(),
+            to: ctx.accounts.slash_recipient_token_account.to_account_info(),
+            authority: ctx.accounts.identity_account.to_account_info(),
+        };
+        
+        let cpi_program = ctx.accounts.token_program.to_account_info();
+        let cpi_ctx = CpiContext::new_with_signer(cpi_program, cpi_accounts, signer);
+        
+        transfer(cpi_ctx, amount)?;
+
+        // Update identity account
+        let identity_account = &mut ctx.accounts.identity_account;
+        identity_account.stake_amount = identity_account.stake_amount.checked_sub(amount)
+            .ok_or(ProgramError::ArithmeticOverflow)?;
+
+        // Record the slash event
+        msg!("Slashed {} tokens from identity: {} for reason: {}", amount, identity_account.key(), reason);
+        Ok(())
+    }
+
+    // New function to update reputation
+    pub fn update_reputation(ctx: Context<UpdateReputation>, reputation_change: i64) -> Result<()> {
+        let identity_account = &mut ctx.accounts.identity_account;
+        
+        // Update reputation with overflow protection
+        if reputation_change >= 0 {
+            identity_account.reputation = identity_account.reputation.checked_add(reputation_change as u64)
+                .ok_or(ProgramError::ArithmeticOverflow)?;
+        } else {
+            let abs_change = reputation_change.abs() as u64;
+            identity_account.reputation = identity_account.reputation.checked_sub(abs_change)
+                .unwrap_or(0); // Don't go below 0
+        }
+
+        msg!("Updated reputation for identity: {} to {}", identity_account.key(), identity_account.reputation);
+        Ok(())
+    }
 }
 
 // --- 2. ADDED A HELPER CALCULATION ---
@@ -76,6 +151,9 @@ pub struct AxiomAiIdentity {
 
     // The amount of $AXIOM tokens staked to keep this ID active
     pub stake_amount: u64,
+
+    // Whether this identity is soul-bound (non-transferable)
+    pub is_soul_bound: bool,
 }
 
 impl AxiomAiIdentity {
@@ -89,7 +167,8 @@ impl AxiomAiIdentity {
         (4 + Self::MAX_PERSONA_LENGTH) + // persona: String (4 bytes for length + 50 for data)
         8 + // reputation: u64
         8 + // created_at: i64
-        8; // stake_amount: u64
+        8 + // stake_amount: u64
+        1; // is_soul_bound: bool
 }
 
 
@@ -125,6 +204,89 @@ pub struct GetIdentity<'info> {
         bump
     )]
     pub identity_account: Account<'info, AxiomAiIdentity>,
+    pub authority: Signer<'info>,
+}
+
+// Define the context for staking tokens
+#[derive(Accounts)]
+pub struct StakeTokens<'info> {
+    #[account(
+        mut,
+        seeds = [b"axiom-identity", user.key().as_ref()],
+        bump
+    )]
+    pub identity_account: Account<'info, AxiomAiIdentity>,
+    
+    #[account(
+        mut,
+        token::mint = axiom_token_mint,
+        token::authority = user,
+    )]
+    pub user_token_account: InterfaceAccount<'info, TokenAccount>,
+    
+    #[account(
+        mut,
+        token::mint = axiom_token_mint,
+        token::authority = identity_account,
+    )]
+    pub stake_token_account: InterfaceAccount<'info, TokenAccount>,
+    
+    pub axiom_token_mint: InterfaceAccount<'info, Mint>,
+    
+    #[account(mut)]
+    pub user: Signer<'info>,
+    
+    pub token_program: Program<'info, Token2022>,
+    pub system_program: Program<'info, System>,
+}
+
+// Define the context for slashing tokens
+#[derive(Accounts)]
+pub struct SlashTokens<'info> {
+    #[account(
+        mut,
+        seeds = [b"axiom-identity", identity_account.authority.key().as_ref()],
+        bump
+    )]
+    pub identity_account: Account<'info, AxiomAiIdentity>,
+    
+    #[account(
+        mut,
+        token::mint = axiom_token_mint,
+        token::authority = identity_account,
+    )]
+    pub stake_token_account: InterfaceAccount<'info, TokenAccount>,
+    
+    #[account(
+        mut,
+        token::mint = axiom_token_mint,
+        token::authority = slash_recipient,
+    )]
+    pub slash_recipient_token_account: InterfaceAccount<'info, TokenAccount>,
+    
+    pub axiom_token_mint: InterfaceAccount<'info, Mint>,
+    
+    /// CHECK: This account can be any valid pubkey
+    pub slash_recipient: AccountInfo<'info>,
+    
+    pub token_program: Program<'info, Token2022>,
+    pub system_program: Program<'info, System>,
+}
+
+// Define the context for updating reputation
+#[derive(Accounts)]
+pub struct UpdateReputation<'info> {
+    #[account(
+        mut,
+        seeds = [b"axiom-identity", authority.key().as_ref()],
+        bump
+    )]
+    pub identity_account: Account<'info, AxiomAiIdentity>,
+    
+    // Authority must be the same as the identity owner
+    #[account(
+        constraint = authority.key() == identity_account.authority
+    )]
     pub authority: Signer<'info>,
 }
 
