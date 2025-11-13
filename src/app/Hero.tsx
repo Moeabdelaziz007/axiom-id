@@ -1,4 +1,4 @@
-import { ShieldCheck } from "lucide-react";
+import { ShieldCheck, MessageCircle } from "lucide-react";
 
 export default function Hero() {
   return (
@@ -16,6 +16,15 @@ export default function Hero() {
           <button className="bg-primary text-white px-8 py-3 rounded-lg font-semibold hover-primary transition-colors">
             Read The Whitepaper
           </button>
+          <a 
+            href="https://discord.com/api/oauth2/authorize?client_id=1438403210334306304&permissions=8&scope=bot%20applications.commands" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="bg-secondary text-white px-8 py-3 rounded-lg font-semibold hover:bg-secondary-hover transition-colors flex items-center justify-center gap-2"
+          >
+            <MessageCircle className="w-5 h-5" />
+            Join Our Discord
+          </a>
         </div>
       </div>
     </section>

@@ -1,6 +1,6 @@
 "use client";
 
-import { Github, Facebook, Instagram, Mail } from "lucide-react";
+import { Github, Facebook, Instagram, Mail, MessageCircle } from "lucide-react";
 
 // Define a type for the gtag function
 type GtagFunction = (...args: any[]) => void;
@@ -57,6 +57,16 @@ export default function CTA() {
           >
             <Instagram className="w-5 h-5" />
             Instagram
+          </a>
+          <a 
+            href="https://discord.com/api/oauth2/authorize?client_id=1438403210334306304&permissions=8&scope=bot%20applications.commands" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            onClick={() => trackSocialClick('discord')}
+            className="bg-secondary text-white px-8 py-3 rounded-lg font-semibold hover:bg-secondary-hover transition-colors flex items-center justify-center gap-2"
+          >
+            <MessageCircle className="w-5 h-5" />
+            Join Discord
           </a>
           <a 
             href="mailto:team@axiomid.app"
